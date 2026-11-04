@@ -20,7 +20,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import  AuthNGuard  from '../auth/guards/auth.guard';
+import { Private } from '../auth/decorators/private.decortator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { UpdateUserStatusDto } from './dto/update-user-status.dto';
@@ -34,7 +35,8 @@ import { UsersService } from './users.service';
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Missing or invalid JWT' })
 @ApiForbiddenResponse({ description: 'Administrator role required' })
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthNGuard, RolesGuard)
+@Private()
 @Roles(UserRole.ADMIN)
 @Controller('api/v1/users')
 export class UsersController {
@@ -42,7 +44,7 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'List users with pagination' })
-  @ApiOkResponse({ description: 'Paginated users', type: UserResponseDto, isArray: true })
+  @ApiOkResponse({ description: 'Paginated users' })
   findAll(@Query() query: ListUsersQueryDto) {
     return this.usersService.findAll(query);
   }
@@ -52,6 +54,13 @@ export class UsersController {
   @ApiCreatedResponse({ type: UserResponseDto })
   create(@Body() dto: CreateUserDto) {
     return this.usersService.create(dto);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiOkResponse({ type: UserResponseDto })
+  findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.usersService.findOneBy.id(id);
   }
 
   @Patch(':id/status')

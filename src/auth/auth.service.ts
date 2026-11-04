@@ -29,8 +29,8 @@ export class AuthService {
 
             let user: User|undefined;
             
-            if (loginDto.email) user = await this.usersService.findNull.Email(loginDto.email);
-                else if (loginDto.name) user = await this.usersService.findNull.Name(loginDto.name);
+            if (loginDto.email) user = await this.usersService.findOneBy.email(loginDto.email);
+                else if (loginDto.name) user = await this.usersService.findOneBy.name(loginDto.name);
 
             if (!user) throw new NotFoundException('Usuario no encontrado');
 
@@ -42,13 +42,12 @@ export class AuthService {
                 name: user.fullName,
                 role: user.role
             }
-            
 
             return {
                 message: 'Inicio de sesión exitoso',
                 data: user,
                 accessToken: await this.jwtService.signAsync(payload)
+            };
         }
 
     }
-}
