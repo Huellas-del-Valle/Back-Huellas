@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
@@ -14,6 +15,7 @@ export class AuthService {
     constructor(
 
         private readonly usersService: UsersService,
+        private readonly jwtService: JwtService
 
     ) { }
 
@@ -45,7 +47,7 @@ export class AuthService {
             return {
                 message: 'Inicio de sesión exitoso',
                 data: user,
-                accessToken: ''
+                accessToken: await this.jwtService.signAsync(payload)
         }
 
     }
