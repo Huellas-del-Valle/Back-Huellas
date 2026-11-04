@@ -20,7 +20,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import  AuthNGuard  from '../auth/guards/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListUsersQueryDto } from './dto/list-users-query.dto';
 import { UpdateUserStatusDto } from './dto/update-user-status.dto';
@@ -34,7 +34,7 @@ import { UsersService } from './users.service';
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Missing or invalid JWT' })
 @ApiForbiddenResponse({ description: 'Administrator role required' })
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(AuthNGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 @Controller('api/v1/users')
 export class UsersController {

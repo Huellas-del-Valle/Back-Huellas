@@ -39,9 +39,44 @@ export class UsersService {
     };
   }
 
+  findOneBy = {
+
+    id: async (id: string): Promise<User> => {
+
+      const user = await this.usersRepository.findOne({
+        where: { id },
+      });
+      if (!user) throw new NotFoundException('user not found');
+      return user;
+    },
+
+    name: async (name: string): Promise<User> => {
+
+      const user = await this.usersRepository
+        .createQueryBuilder('user')
+        .addSelect('user.passwordHash')
+        .where('user.fullName = :name', { name })
+        .getOne();
+      if (!user) throw new NotFoundException('user not found');
+      return user;
+    },
+
+    email: async (email: string): Promise<User> => {
+
+      const user = await this.usersRepository
+        .createQueryBuilder('user')
+        .addSelect('user.passwordHash')
+        .where('user.email = :email', { email })
+        .getOne();
+      if (!user) throw new NotFoundException('user not found');
+      return user;
+    },
+
+  };
+
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const email = dto.email.trim().toLowerCase();
-    const existing = await this.usersRepository.findOne({ where: { email } });
+    const existing = await this.usersRepository.findOneBy({ email });
     if (existing) {
       throw new ConflictException('A user with this email already exists');
     }
