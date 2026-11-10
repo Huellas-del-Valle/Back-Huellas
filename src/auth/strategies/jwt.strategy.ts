@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
+import { UsersService } from "../../users/users.service";
 import { Payload } from "../interfaces/payload.interface";
 
 
@@ -11,7 +12,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     constructor(
 
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly userService: UsersService
 
     ) {
 
@@ -35,6 +37,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: Payload) {
 
+        const { id } = payload;
+
+        await this.userService.findOneBy.id(id);
+        
         return payload;
 
     }

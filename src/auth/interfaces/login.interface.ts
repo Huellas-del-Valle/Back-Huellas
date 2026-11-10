@@ -3,7 +3,8 @@ import { UserResponseDto } from "../../users/dto/user-response.dto";
 export interface LoginResponse {
 
     message: string;
-    data: UserResponseDto;
     accessToken: string;
+    user: UserResponseDto;
+
     
 }

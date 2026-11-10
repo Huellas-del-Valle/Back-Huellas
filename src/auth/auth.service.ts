@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import { User } from "../users/entities/user.entity";
@@ -35,7 +35,7 @@ export class AuthService {
             if (!user) throw new NotFoundException('Usuario no encontrado');
 
             const match = await compare(password, user.passwordHash);
-            if (!match) throw new BadRequestException('Contraseña incorrecta');
+            if (!match) throw new UnauthorizedException('Contraseña incorrecta');
 
             const payload: Payload = {
                 id: user.id,
@@ -45,8 +45,9 @@ export class AuthService {
 
             return {
                 message: 'Inicio de sesión exitoso',
-                data: user,
-                accessToken: await this.jwtService.signAsync(payload)
+                accessToken: await this.jwtService.signAsync(payload),
+                user
+
             };
         }
 
