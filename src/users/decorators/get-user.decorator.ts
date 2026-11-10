@@ -1,7 +1,5 @@
-///// Mover a USERS
-
 import { createParamDecorator } from "@nestjs/common";
-import { Payload } from "../interfaces/payload.interface";
+import { Payload } from "../../auth/interfaces/payload.interface";
 
 
 export const GetUser = createParamDecorator(

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiNotFoundResponse, ApiOperation, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { GetUser } from "./decorators/get-user.decorator";
+import { GetUser } from "../users/decorators/get-user.decorator";
 import { Private } from "./decorators/private.decortator";
 import { LoginUserDto } from "./dto/login-user.dto";
 import type { LoginResponse } from "./interfaces/login.interface";
