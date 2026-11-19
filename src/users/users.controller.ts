@@ -38,7 +38,7 @@ import { UsersService } from './users.service';
 @UseGuards(AuthNGuard, RolesGuard)
 @Private()
 @Roles(UserRole.ADMIN)
-@Controller('api/v1/users')
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

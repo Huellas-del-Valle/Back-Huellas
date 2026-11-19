@@ -99,7 +99,7 @@ describe('AuthService', () => {
       });
       expect(result).toEqual({
         message: 'Inicio de sesión exitoso',
-        data: validUser,
+        user: validUser,
         accessToken: expectedToken,
       });
     });
