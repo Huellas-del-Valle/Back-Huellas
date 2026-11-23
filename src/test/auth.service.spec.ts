@@ -1,13 +1,17 @@
-    import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Test, TestingModule } from '@nestjs/testing';
-import * as bcrypt from 'bcrypt';
-import { AuthService } from '../auth/auth.service';
-import { UsersService } from '../users/users.service';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Test, TestingModule } from "@nestjs/testing";
+import * as bcrypt from "bcrypt";
+import { AuthService } from "../auth/auth.service";
+import { UsersService } from "../users/users.service";
 
-jest.mock('bcrypt');
+jest.mock("bcrypt");
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let authService: AuthService;
   let usersService: UsersService;
   let jwtService: JwtService;
@@ -38,82 +42,87 @@ describe('AuthService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(authService).toBeDefined();
   });
 
-  describe('login', () => {
+  describe("login", () => {
     const validUser = {
       id: 1,
-      email: 'test@test.com',
-      name: 'testuser',
-      fullName: 'Test User',
-      role: 'admin',
-      passwordHash: 'hashedPassword',
+      email: "test@test.com",
+      name: "testuser",
+      fullName: "Test User",
+      role: "admin",
+      passwordHash: "hashedPassword",
     };
 
-    it('should throw BadRequestException if neither email nor name are provided', async () => {
-      const dto = { password: 'password123' } as any;
+    it("should throw BadRequestException if neither email nor name are provided", async () => {
+      const dto = { password: "password123" } as any;
 
-      await expect(authService.login(dto)).rejects.toThrow(
-        BadRequestException,
+      await expect(authService.login(dto)).rejects.toThrow(BadRequestException);
+    });
+
+    it("should throw NotFoundException if user does not exist by email", async () => {
+      mockUsersService.findOneBy.email.mockResolvedValue(undefined);
+
+      const dto = { email: "unknown@test.com", password: "password123" };
+
+      await expect(authService.login(dto)).rejects.toThrow(NotFoundException);
+      expect(usersService.findOneBy.email).toHaveBeenCalledWith(
+        "unknown@test.com",
       );
     });
 
-    it('should throw NotFoundException if user does not exist by email', async () => {
-      mockUsersService.findOneBy.email.mockResolvedValue(undefined);
-
-      const dto = { email: 'unknown@test.com', password: 'password123' };
-
-      await expect(authService.login(dto)).rejects.toThrow(NotFoundException);
-      expect(usersService.findOneBy.email).toHaveBeenCalledWith('unknown@test.com');
-    });
-
-    it('should throw UnauthorizedException if password does not match', async () => {
+    it("should throw UnauthorizedException if password does not match", async () => {
       mockUsersService.findOneBy.email.mockResolvedValue(validUser.email);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const dto = { email: 'test@test.com', password: 'wrongPassword' };
+      const dto = { email: "test@test.com", password: "wrongPassword" };
 
       await expect(authService.login(dto)).rejects.toThrow(
         UnauthorizedException,
       );
-      expect(bcrypt.compare).toHaveBeenCalledWith('wrongPassword', undefined);
+      expect(bcrypt.compare).toHaveBeenCalledWith("wrongPassword", undefined);
     });
 
-    it('should successfully log in and return access token and user data when credentials are valid (by email)', async () => {
+    it("should successfully log in and return access token and user data when credentials are valid (by email)", async () => {
       mockUsersService.findOneBy.email.mockResolvedValue(validUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      const expectedToken = 'mocked_jwt_token';
+      const expectedToken = "mocked_jwt_token";
       mockJwtService.signAsync.mockResolvedValue(expectedToken);
 
-      const dto = { email: 'test@test.com', password: 'password123' };
+      const dto = { email: "test@test.com", password: "password123" };
       const result = await authService.login(dto);
 
-      expect(usersService.findOneBy.email).toHaveBeenCalledWith('test@test.com');
-      expect(bcrypt.compare).toHaveBeenCalledWith('password123', 'hashedPassword');
+      expect(usersService.findOneBy.email).toHaveBeenCalledWith(
+        "test@test.com",
+      );
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        "password123",
+        "hashedPassword",
+      );
       expect(jwtService.signAsync).toHaveBeenCalledWith({
         id: validUser.id,
         name: validUser.fullName,
         role: validUser.role,
       });
       expect(result).toEqual({
-        message: 'Inicio de sesión exitoso',
+        message: "Inicio de sesión exitoso",
         user: validUser,
         accessToken: expectedToken,
       });
     });
 
-    it('should successfully log in using name instead of email', async () => {
+    it("should successfully log in using name instead of email", async () => {
       mockUsersService.findOneBy.name.mockResolvedValue(validUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      const expectedToken = 'mocked_jwt_token';
+      const expectedToken = "mocked_jwt_token";
       mockJwtService.signAsync.mockResolvedValue(expectedToken);
 
-      const dto = { name: 'testuser', password: 'password123' };
+      const dto = { name: "testuser", password: "password123" };
       const result = await authService.login(dto);
 
-      expect(usersService.findOneBy.name).toHaveBeenCalledWith('testuser');
+      expect(usersService.findOneBy.name).toHaveBeenCalledWith("testuser");
       expect(result.accessToken).toEqual(expectedToken);
     });
   });
