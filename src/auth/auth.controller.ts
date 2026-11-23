@@ -9,7 +9,7 @@ import type { Payload } from "./interfaces/payload.interface";
 
 
 
-@Controller('v1/auth')
+@Controller('auth')
 export class AuthController {
 
     constructor(
