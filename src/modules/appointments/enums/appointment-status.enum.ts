@@ -1,0 +1,7 @@
+export enum AppointmentStatus {
+  PENDIENTE = 'PENDIENTE',
+  CONFIRMADA = 'CONFIRMADA',
+  ATENDIDA = 'ATENDIDA',
+  CANCELADA = 'CANCELADA',
+  NO_ASISTIDA = 'NO_ASISTIDA',
+}
