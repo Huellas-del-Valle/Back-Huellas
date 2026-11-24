@@ -5,11 +5,13 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   Query,
+  forwardRef,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -29,11 +31,17 @@ import { UpdateClientDto } from './dto/update-client.dto';
 import { ListClientsQueryDto } from './dto/list-clients-query.dto';
 import { SearchClientQueryDto } from './dto/search-client-query.dto';
 import { ClientResponseDto } from './dto/client-response.dto';
+import { PetsService } from '../pets/pets.service';
+import { PetResponseDto } from '../pets/dto/pet-response.dto';
 
 @ApiTags('clients')
 @Controller('clients')
 export class ClientsController {
-  constructor(private readonly clientsService: ClientsService) {}
+  constructor(
+    private readonly clientsService: ClientsService,
+    @Inject(forwardRef(() => PetsService))
+    private readonly petsService: PetsService,
+  ) {}
 
   @Get('search')
   @ApiOperation({
@@ -93,6 +101,25 @@ export class ClientsController {
     return this.clientsService.findOne(id);
   }
 
+  @Get(':id/pets')
+  @ApiOperation({
+    summary: 'Consultar mascotas asociadas a un propietario',
+    description:
+      'Retorna el listado de todas las mascotas vinculadas al ID del cliente provisto (GET /api/v1/clients/:id/pets).',
+  })
+  @ApiParam({ name: 'id', description: 'UUID del cliente' })
+  @ApiOkResponse({
+    description: 'Mascotas del cliente encontradas exitosamente',
+    type: [PetResponseDto],
+  })
+  @ApiNotFoundResponse({ description: 'Cliente no encontrado' })
+  @ApiBadRequestResponse({ description: 'ID no es un UUID válido' })
+  findPets(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<PetResponseDto[]> {
+    return this.petsService.findByClientId(id);
+  }
+
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar un cliente por su ID (UUID)' })
   @ApiParam({ name: 'id', description: 'UUID del cliente' })
@@ -104,7 +131,9 @@ export class ClientsController {
   @ApiConflictResponse({
     description: 'Conflicto por número de documento duplicado',
   })
-  @ApiBadRequestResponse({ description: 'Datos de entrada inválidos o ID no válido' })
+  @ApiBadRequestResponse({
+    description: 'Datos de entrada inválidos o ID no válido',
+  })
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateClientDto,
