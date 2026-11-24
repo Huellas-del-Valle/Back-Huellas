@@ -20,6 +20,17 @@ export const envValidationSchema = Joi.object({
   // Auth / JWT
   JWT_SECRET: Joi.string().required().min(4),
   JWT_EXPIRES_IN: Joi.string().default('2h'),
+
+  // Mail / SMTP
+  SMTP_HOST: Joi.string().default('localhost'),
+  SMTP_PORT: Joi.number().default(587),
+  SMTP_USER: Joi.string().allow('').default(''),
+  SMTP_PASS: Joi.string().allow('').default(''),
+  SMTP_PASSWORD: Joi.string().allow('').default(''),
+  SMTP_FROM: Joi.string().default(
+    '"Huellas del Valle" <notificaciones@huellasdelvalle.com>',
+  ),
+  SMTP_SECURE: Joi.boolean().default(false),
 });
 
 export function validateEnv(config: Record<string, unknown>): Record<string, unknown> {

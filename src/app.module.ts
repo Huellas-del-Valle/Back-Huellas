@@ -5,11 +5,14 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './Database/database.module';
 import { HealthModule } from './modules/health/health.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { PetsModule } from './modules/pets/pets.module';
+import { MailModule } from './modules/mail/mail.module';
+import { VaccinationsModule } from './modules/vaccinations/vaccinations.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AuditMiddleware } from './auth/middlwares/login.middleware';
@@ -21,10 +24,13 @@ import { AuditMiddleware } from './auth/middlwares/login.middleware';
       envFilePath: '.env',
       validate: validateEnv,
     }),
+    ScheduleModule.forRoot(),
     DatabaseModule,
     HealthModule,
     ClientsModule,
     PetsModule,
+    MailModule,
+    VaccinationsModule,
     UsersModule,
     AuthModule,
   ],
