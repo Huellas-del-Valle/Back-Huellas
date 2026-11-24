@@ -11,6 +11,7 @@ import { DatabaseModule } from './Database/database.module';
 import { HealthModule } from './modules/health/health.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { PetsModule } from './modules/pets/pets.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { MailModule } from './modules/mail/mail.module';
 import { VaccinationsModule } from './modules/vaccinations/vaccinations.module';
 import { UsersModule } from './users/users.module';
@@ -29,6 +30,7 @@ import { AuditMiddleware } from './auth/middlwares/login.middleware';
     HealthModule,
     ClientsModule,
     PetsModule,
+    AppointmentsModule,
     MailModule,
     VaccinationsModule,
     UsersModule,
