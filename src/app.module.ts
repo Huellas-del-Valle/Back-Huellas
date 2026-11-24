@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validateEnv } from './config/env.validation';
 import { DatabaseModule } from './Database/database.module';
 import { HealthModule } from './modules/health/health.module';
+import { ClientsModule } from './modules/clients/clients.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AuditMiddleware } from './auth/middlwares/login.middleware';
@@ -16,6 +17,7 @@ import { AuditMiddleware } from './auth/middlwares/login.middleware';
     }),
     DatabaseModule,
     HealthModule,
+    ClientsModule,
     UsersModule,
     AuthModule,
   ],
