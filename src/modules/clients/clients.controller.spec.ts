@@ -4,10 +4,13 @@ import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ClientResponseDto } from './dto/client-response.dto';
+import { PetsService } from '../pets/pets.service';
+import { PetResponseDto } from '../pets/dto/pet-response.dto';
 
 describe('ClientsController', () => {
   let controller: ClientsController;
   let service: ClientsService;
+  let petsService: PetsService;
 
   const mockClientResponse: ClientResponseDto = {
     id: 'a0000000-0000-0000-0000-000000000001',
@@ -17,6 +20,20 @@ describe('ClientsController', () => {
     email: 'userejemplo@huellas.com',
     address: 'Calle Ejemplo 123',
     createdAt: new Date('2026-11-23T19:00:00.000Z'),
+  };
+
+  const mockPetResponse: PetResponseDto = {
+    id: 'b0000000-0000-0000-0000-000000000001',
+    uniqueCode: 'HUV-2026-0001',
+    name: 'Mascota ejemplo',
+    species: 'CANINO',
+    breed: 'Labrador',
+    birthDate: '2024-01-15',
+    gender: 'MACHO',
+    client: {
+      id: mockClientResponse.id,
+      fullName: mockClientResponse.fullName,
+    },
   };
 
   const mockClientsService = {
@@ -34,6 +51,10 @@ describe('ClientsController', () => {
     remove: jest.fn().mockResolvedValue(undefined),
   };
 
+  const mockPetsService = {
+    findByClientId: jest.fn().mockResolvedValue([mockPetResponse]),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ClientsController],
@@ -42,11 +63,16 @@ describe('ClientsController', () => {
           provide: ClientsService,
           useValue: mockClientsService,
         },
+        {
+          provide: PetsService,
+          useValue: mockPetsService,
+        },
       ],
     }).compile();
 
     controller = module.get<ClientsController>(ClientsController);
     service = module.get<ClientsService>(ClientsService);
+    petsService = module.get<PetsService>(PetsService);
 
     jest.clearAllMocks();
   });
@@ -54,6 +80,7 @@ describe('ClientsController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
+    expect(petsService).toBeDefined();
   });
 
   describe('create', () => {
@@ -98,6 +125,15 @@ describe('ClientsController', () => {
 
       expect(service.findOne).toHaveBeenCalledWith(mockClientResponse.id);
       expect(result).toEqual(mockClientResponse);
+    });
+  });
+
+  describe('findPets', () => {
+    it('should call petsService.findByClientId and return client pets', async () => {
+      const result = await controller.findPets(mockClientResponse.id);
+
+      expect(petsService.findByClientId).toHaveBeenCalledWith(mockClientResponse.id);
+      expect(result).toEqual([mockPetResponse]);
     });
   });
 

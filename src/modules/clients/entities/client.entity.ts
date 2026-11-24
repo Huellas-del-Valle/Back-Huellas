@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Pet } from '../../pets/entities/pet.entity';
 
 @Entity('clients')
 @Index('idx_clients_identification', ['identification'], { unique: true })
@@ -28,6 +30,9 @@ export class Client {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   address?: string;
+
+  @OneToMany(() => Pet, (pet) => pet.client)
+  pets: Pet[];
 
   @CreateDateColumn({ type: 'datetime', precision: 6 })
   createdAt: Date;
