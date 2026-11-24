@@ -5,10 +5,12 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Client } from '../../clients/entities/client.entity';
+import { VaccinationRecord } from '../../vaccinations/entities/vaccination-record.entity';
 
 @Entity('pets')
 @Index('idx_pets_unique_code', ['uniqueCode'], { unique: true })
@@ -44,6 +46,9 @@ export class Pet {
   })
   @JoinColumn({ name: 'client_id' })
   client: Client;
+
+  @OneToMany(() => VaccinationRecord, (record) => record.pet)
+  vaccinationRecords: VaccinationRecord[];
 
   @CreateDateColumn({ type: 'datetime', precision: 6 })
   createdAt: Date;
